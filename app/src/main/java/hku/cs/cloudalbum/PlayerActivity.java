@@ -1,4 +1,5 @@
 package hku.cs.cloudalbum;
+
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.media.MediaPlayer;
@@ -13,6 +14,8 @@ import android.widget.VideoView;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static hku.cs.cloudalbum.R.id.next;
 
 
 public class PlayerActivity extends Activity implements MediaPlayer.OnErrorListener,
@@ -36,41 +39,44 @@ public class PlayerActivity extends Activity implements MediaPlayer.OnErrorListe
 
         //Set the screen to landscape.
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        prevButton = (Button)findViewById(R.id.prev);
-        nextButton = (Button)findViewById(R.id.next);
+        prevButton = (Button) findViewById(R.id.prev);
+        nextButton = (Button) findViewById(next);
 
         mVideoView = (VideoView) findViewById(R.id.video_view);
         mMediaController = new MediaController(this);
 
         //Video file
-        itemList = (List<Map<String, Object>>)getIntent().getSerializableExtra("videoitems");
+        itemList = (List<Map<String, Object>>) getIntent().getSerializableExtra("videoitems");
         cur_position = getIntent().getIntExtra("position", 0);
         setPlayList(cur_position, itemList);
 
-        String murl = (String)itemList.get(cur_position).get("videoUrl");
+        String murl = (String) itemList.get(cur_position).get("videoUrl");
         mUri = Uri.parse(murl);
 
-        playVideo(mUri);
+//        playVideo(mUri);
+        mVideoView.setMediaController(mMediaController);
+        mVideoView.setVideoURI(mUri);
+        mVideoView.start();
 
         prevButton.setOnClickListener(new View.OnClickListener() {
-            String prevurl = (String) previtem.get("videoUrl");
-            Uri prevuri = Uri.parse(prevurl);
             @Override
             public void onClick(View view) {
+                String prevurl = (String) previtem.get("videoUrl");
+                Uri prevuri = Uri.parse(prevurl);
                 mVideoView.setVideoURI(prevuri);
-                setPlayList(getPrevPosition(itemList.size(), cur_position), itemList);
                 mVideoView.start();
+                setPlayList(getPrevPosition(itemList.size(), cur_position), itemList);
             }
         });
 
         nextButton.setOnClickListener(new View.OnClickListener() {
-            String nexturl = (String) previtem.get("videoUrl");
-            Uri nexturi = Uri.parse(nexturl);
             @Override
             public void onClick(View view) {
+                String nexturl = (String) nextitem.get("videoUrl");
+                Uri nexturi = Uri.parse(nexturl);
                 mVideoView.setVideoURI(nexturi);
-                setPlayList(getNextPosition(itemList.size(), cur_position), itemList);
                 mVideoView.start();
+                setPlayList(getNextPosition(itemList.size(), cur_position), itemList);
             }
         });
     }
